@@ -1,0 +1,105 @@
+POST http://127.0.0.1:8000/api-auth/login/
+Content-type: application/json
+
+{ "username": "admin", "password": "admin" }
+
+###
+
+POST http://127.0.0.1:8000/api-auth/signup/
+Content-type: application/json
+
+{ "username": "abdo", "password": "abdo", "email": "a@a.com" }
+
+###
+GET http://127.0.0.1:8000/products/
+Content-type: application/json
+Authorization: Token d6cdaf444065d8568b754246a7f5e7af5f4404f0
+# Authorization: Token 279d38d84e4a8e0d7d1db5b8322a359896a7b6f4
+
+{
+}
+
+###
+PUT http://127.0.0.1:8000/products/10/
+Content-type: application/json
+# Authorization: Token d6cdaf444065d8568b754246a7f5e7af5f4404f0
+Authorization: Token 279d38d84e4a8e0d7d1db5b8322a359896a7b6f4
+
+{
+    "name": "new Name 2",
+    "description": "new Description 2",
+    "price": 100.00
+}
+
+###
+PUT http://127.0.0.1:8000/orders/4/
+Content-type: application/json
+# Authorization: Token d6cdaf444065d8568b754246a7f5e7af5f4404f0
+Authorization: Token 279d38d84e4a8e0d7d1db5b8322a359896a7b6f4
+
+{
+    "product": 6
+}
+
+###
+
+GET http://127.0.0.1:8000/orders/
+Content-type: application/json
+Authorization: Token d6cdaf444065d8568b754246a7f5e7af5f4404f0
+# Authorization: Token 279d38d84e4a8e0d7d1db5b8322a359896a7b6f4
+
+{
+}
+
+###
+POST http://127.0.0.1:8000/orders/
+Content-type: application/json
+Authorization: Token d6cdaf444065d8568b754246a7f5e7af5f4404f0
+# Authorization: Token 279d38d84e4a8e0d7d1db5b8322a359896a7b6f4
+
+{
+    "product": 10,
+    "quantity": 1
+}
+
+###
+
+GET http://127.0.0.1:8000/gathorders/
+Content-type: application/json
+Authorization: Token d6cdaf444065d8568b754246a7f5e7af5f4404f0
+# Authorization: Token 279d38d84e4a8e0d7d1db5b8322a359896a7b6f4
+
+{
+
+}
+
+###
+POST http://127.0.0.1:8000/gathorders/
+Content-type: application/json
+Authorization: Token d6cdaf444065d8568b754246a7f5e7af5f4404f0
+# Authorization: Token 279d38d84e4a8e0d7d1db5b8322a359896a7b6f4
+
+{
+
+}
+
+###
+PUT http://127.0.0.1:8000/gathorders/24/
+Content-type: application/json
+Authorization: Token d6cdaf444065d8568b754246a7f5e7af5f4404f0
+# Authorization: Token 279d38d84e4a8e0d7d1db5b8322a359896a7b6f4
+
+{
+    "user": 4
+}
+
+###
+DELETE http://127.0.0.1:8000/gathorders/24/
+Content-type: application/json
+Authorization: Token d6cdaf444065d8568b754246a7f5e7af5f4404f0
+# Authorization: Token 279d38d84e4a8e0d7d1db5b8322a359896a7b6f4
+
+{
+}
+
+###
