@@ -6,3 +6,7 @@ class UserSignupSerializer(serializers.ModelSerializer):
         model = User
         fields = ['id', 'username', 'password', 'email']
         extra_kwargs = {'password': {'write_only': True}}
+
+class TestSerializer(serializers.Serializer):
+    name = serializers.CharField(max_length=100)
+    age = serializers.IntegerField()

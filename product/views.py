@@ -17,12 +17,11 @@ class ReadOnly(permissions.BasePermission):
 class ProductsViewSet(viewsets.ViewSet):
     authentication_classes = [SessionAuthentication, TokenAuthentication]
     permission_classes = [permissions.IsAdminUser | ReadOnly]
-
-    def list(self):
+    print(permission_classes)
+    def list(self, request):
         products = Product.objects.all()
         serializer = ProductSerializer(products, many=True)
         return Response(serializer.data)
-    
 
     def create(self, request):
         serializer = CreateProductSerializer(data=request.data)
@@ -46,6 +45,10 @@ class ProductsViewSet(viewsets.ViewSet):
         if not Product.objects.filter(id=pk).exists(): # not checked condition
             return Response({"details": "not found"} ,status=status.HTTP_404_NOT_FOUND)
         product = Product.objects.get(id=pk)
+
+        if not product.gathered_orders:
+            return Response({"details": "can not change it"} ,status=status.HTTP_400_BAD_REQUEST)
+
         serializer = ProductSerializer(instance=product, data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -60,5 +63,3 @@ class ProductsViewSet(viewsets.ViewSet):
         return Response(status=status.HTTP_204_NO_CONTENT)
     
 
-
-# create order
