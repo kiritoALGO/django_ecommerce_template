@@ -2,7 +2,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view
-from .serializers import UserSignupSerializer
+from .serializers import UserSerializer
 from .models import User
 from django.contrib.auth import login, authenticate
 # Create your views here.
@@ -13,7 +13,7 @@ class SignupView(APIView):
     Create a new user and return token and user data.
     """
     def post(self, request):
-        serializer = UserSignupSerializer(data=request.data)
+        serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             user = User.objects.get(username=request.data.get('username'))
@@ -41,30 +41,27 @@ def login(request):
         return Response({'detail': 'invalid username or password'}, status=status.HTTP_404_NOT_FOUND)
     
     token, created = Token.objects.get_or_create(user=user)
-    serializer = UserSignupSerializer(instance=user)
+    serializer = UserSerializer(instance=user)
     return Response({'token': token.key, 'user': serializer.data})
-
-
-
 
 from rest_framework.decorators import authentication_classes, permission_classes
 from rest_framework.authentication import SessionAuthentication, TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 
 @api_view(['GET'])
-@authentication_classes([SessionAuthentication, TokenAuthentication])
+@authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
 def test_token(request):
-    # print(request.user.username)
-    return Response("Passed for {}".format(request.user.email))
+    serializer = UserSerializer(request.user)
+    return Response(serializer.data, status=status.HTTP_302_FOUND)
 
-from .serializers import TestSerializer
-@api_view(['POST'])
-def test_view(request):
-    """
-    Test view to verify Swagger displays parameters correctly.
-    """
-    serializer = TestSerializer(data=request.data)
-    if serializer.is_valid():
-        return Response(serializer.validated_data)
-    return Response(serializer.errors, status=400)
+# from .serializers import TestSerializer
+# @api_view(['POST'])
+# def test_view(request):
+#     """
+#     Test view to verify Swagger displays parameters correctly.
+#     """
+#     serializer = TestSerializer(data=request.data)
+#     if serializer.is_valid():
+#         return Response(serializer.validated_data)
+#     return Response(serializer.errors, status=400)

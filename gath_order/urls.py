@@ -4,7 +4,7 @@ from rest_framework.routers import DefaultRouter
 from . import views
 
 router = DefaultRouter()
-router.register(r'', views.GatherdOrdersViewSet, basename='gath_order')
+router.register(r'', views.GatheredOrdersViewSet, basename='gath_order')
 
 urlpatterns = [
     # path('gathOrder/', views.create_gatherd_orders, name='gathOrder'),

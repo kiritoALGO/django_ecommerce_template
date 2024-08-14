@@ -1,81 +1,51 @@
-from rest_framework.authentication import SessionAuthentication, TokenAuthentication
-from rest_framework import permissions, status, viewsets
+from rest_framework import generics, mixins, permissions, status, viewsets
 from rest_framework.response import Response
-from rest_framework.decorators import api_view, authentication_classes, permission_classes
+from rest_framework.authentication import SessionAuthentication, TokenAuthentication
 
 from main.permissions import IsAuthorOrAdmin
 from order.models import SingularProductOrder
 from product.serializers import ProductSerializer
 from .models import GatheredOrders
 from .serializers import GatheredOrdersSerializer
-# Create your views here.
 
-class GatherdOrdersViewSet(viewsets.ViewSet):
+class GatheredOrdersViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.CreateModelMixin, 
+                            mixins.RetrieveModelMixin, mixins.UpdateModelMixin, mixins.DestroyModelMixin):
     authentication_classes = [SessionAuthentication, TokenAuthentication]
     permission_classes = [IsAuthorOrAdmin]
+    serializer_class = GatheredOrdersSerializer
+    queryset = GatheredOrders.objects.all()
     
-    def create(self, requset):
-        user = requset.user
+    def get_queryset(self):
+        user = self.request.user
+        return GatheredOrders.objects.filter(user=user)
+
+    def perform_create(self, serializer):
+        user = self.request.user
         orders = SingularProductOrder.objects.filter(user=user, gathered_orders=None)
         if not orders.exists():
-            return Response({'details': "not products in cart"})
-        gath_order = GatheredOrders.objects.create(user=user)
-        gath_order.save()
-        for Order in orders:
-            order = SingularProductOrder.objects.get(id=Order.id)
+            raise Response({'details': "No products in cart"}, status=status.HTTP_400_BAD_REQUEST)
+        gath_order = serializer.save(user=user)
+        for order in orders:
             order.gathered_orders = gath_order
             order.save()
-        return Response(status=status.HTTP_201_CREATED)
 
-    def list(self, requset):
-        user = requset.user
-        gath_orders = GatheredOrders.objects.filter(user=user)
-        if not GatheredOrders.objects.filter(user=user).exists():
-            return Response({'details': "not orders has been confirmed"})
-        serializer = GatheredOrdersSerializer(gath_orders, many=True)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-    
-    def retrieve(self, requset, pk):
-        gath_order = GatheredOrders.objects.get(id=pk)
-        serializer = GatheredOrdersSerializer(gath_order)
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance)
         data = serializer.data
         x = []
-        orders = SingularProductOrder.objects.filter(gathered_orders=gath_order)
+        orders = SingularProductOrder.objects.filter(gathered_orders=instance)
         for order in orders:
             d = {}
-            prodcut_serializer = ProductSerializer(order.product)
-            d["product"] = prodcut_serializer.data
+            product_serializer = ProductSerializer(order.product)
+            d["product"] = product_serializer.data
             d["quantity"] = order.quantity
-            # print(order)
             x.append(d)
         data["orders"] = x
-        return Response(data=data, status=status.HTTP_200_OK)
-    
-    def update(self, requset, pk):
-        user = requset.user
-        if not user.is_staff:
-            return Response({'error': 'You are not authorized to perform this action.'}, status=status.HTTP_403_FORBIDDEN)
-        
-        gath_order = GatheredOrders.objects.get(id=pk)
-        serializer = GatheredOrdersSerializer(gath_order,data=requset.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
-    def destroy(self, request, pk=None):
+        return Response(data, status=status.HTTP_200_OK)
+
+    def destroy(self, request, *args, **kwargs):
         user = request.user
         if not user.is_staff:
             return Response({'error': 'You are not authorized to perform this action.'}, status=status.HTTP_403_FORBIDDEN)
-        gath_order = GatheredOrders.objects.get(id=pk)
-        gath_order.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
-
-
-
-
-
-
-
-
-
+        return super().destroy(request, *args, **kwargs)
