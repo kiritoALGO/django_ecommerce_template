@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework import viewsets, mixins
 from .serializers import ProductSerializer
 from .models import Product
-# Create your views here.
+from rest_framework.parsers import MultiPartParser, FormParser
 
 from rest_framework.authentication import SessionAuthentication, TokenAuthentication
 from rest_framework import permissions
@@ -26,6 +26,17 @@ class ProductsViewSet(viewsets.GenericViewSet,
     permission_classes = [permissions.IsAdminUser | ReadOnly]
     serializer_class = ProductSerializer
     queryset = Product.objects.all()
+    parser_classes = [MultiPartParser, FormParser] # Added by Abdo
+
+    # Added by Abdo
+    def create(self, request, *args, **kwargs):
+        print("Request data:", request.data)  # Log request data for debugging
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            self.perform_create(serializer)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        print("Errors:", serializer.errors)  # Log any validation errors
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     # def get(self, request, *args, **kwargs):
     #     return self.list(request, *args, **kwargs)
