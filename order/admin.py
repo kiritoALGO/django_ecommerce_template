@@ -1,6 +1,4 @@
 from django.contrib import admin
-from .models import SingularProductOrder
-from .models import GatheredOrders, SingularProductOrder
+from .models import Order
 # Register your models here.
-admin.site.register(SingularProductOrder)
-admin.site.register(GatheredOrders)
+admin.site.register(Order)

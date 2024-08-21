@@ -30,13 +30,17 @@ INSTALLED_APPS = [
     # Internal apps
     'user',
     'product',
+    'orderItem',
     'order',
-    'gath_order',
     'tag',
+    'address',
+    'inventory',
+    'size',
     
     # External packages
     'rest_framework',
     'rest_framework.authtoken',
+    # 'django.contrib.staticfiles',  # required for serving swagger ui's css/js files
     'drf_yasg',
 
     # Abdo

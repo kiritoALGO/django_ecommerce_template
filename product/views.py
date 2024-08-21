@@ -1,13 +1,12 @@
-from rest_framework import status
+from rest_framework import status, permissions, viewsets, mixins
 from rest_framework.response import Response
-from rest_framework import viewsets, mixins
-from .serializers import ProductSerializer
-from .models import Product
-from rest_framework.parsers import MultiPartParser, FormParser
-
+from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from rest_framework.authentication import SessionAuthentication, TokenAuthentication
-from rest_framework import permissions
+from rest_framework.views import APIView
 
+
+from .serializers import ProductSerializer, AddSizesToProductSerializer
+from .models import Product
 
 # all for Prdoucts
 class ReadOnly(permissions.BasePermission):
@@ -38,6 +37,32 @@ class ProductsViewSet(viewsets.GenericViewSet,
         print("Errors:", serializer.errors)  # Log any validation errors
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
+
+
+class AddSizesToProductView(APIView):
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
+    permission_classes = [permissions.IsAdminUser]
+    # parser_classes = [JSONParser]  # or any other parser required for adding sizes
+
+    def post(self, request, pk=None):
+        try:
+            product = Product.objects.get(pk=pk)
+        except Product.DoesNotExist:
+            return Response({"detail": "Product not found"}, status=status.HTTP_404_NOT_FOUND)
+        
+        serializer = AddSizesToProductSerializer(data=request.data, context={'product': product})
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+
+
+
+def dumb():
     # def get(self, request, *args, **kwargs):
     #     return self.list(request, *args, **kwargs)
     # # def list(self, request):
@@ -81,3 +106,5 @@ class ProductsViewSet(viewsets.GenericViewSet,
     #     product.delete()
     #     return Response(status=status.HTTP_204_NO_CONTENT)
     
+    pass
+
