@@ -5,30 +5,46 @@ Content-type: application/json
 
 ###
 
+POST http://127.0.0.1:8000/api-auth/login/
+Content-type: application/json
+
+{ "username": "test", "password": "test" }
+
+###
+
 POST http://127.0.0.1:8000/api-auth/signup/
 Content-type: application/json
 
-{ "username": "abdo", "password": "abdo", "email": "a@a.com" }
+{ "username": "test", "password": "test", "email": "test@test.com" }
 
 ###
-GET http://127.0.0.1:8000/products/
+POST http://127.0.0.1:8000/products/
 Content-type: application/json
-Authorization: Token d6cdaf444065d8568b754246a7f5e7af5f4404f0
+Authorization: Token 1edee542e2fa92de9fbec589c00548f191655c3e
 # Authorization: Token 279d38d84e4a8e0d7d1db5b8322a359896a7b6f4
 
 {
+    "name": "this is last test Prodcut",
+    "price": "800.00",
+    "image": "E:/photoshop/galery/jpg/iamtrust_me_iam_a_doctor.jpg",
+    "description": "",
+    "created_at": "2024-08-16T20:52:28.456230Z",
+    "tags": [
+        {
+            "id": 3,
+            "name": "shorts"
+        }
+    ]
 }
 
 ###
 PUT http://127.0.0.1:8000/products/10/
 Content-type: application/json
-# Authorization: Token d6cdaf444065d8568b754246a7f5e7af5f4404f0
-Authorization: Token 279d38d84e4a8e0d7d1db5b8322a359896a7b6f4
+Authorization: Token 1edee542e2fa92de9fbec589c00548f191655c3e
+# Authorization: Token 279d38d84e4a8e0d7d1db5b8322a359896a7b6f4
 
 {
-    "name": "new Name 2",
-    "description": "new Description 2",
-    "price": 100.00
+    "name": "changeTest"
 }
 
 ###
@@ -45,26 +61,46 @@ Authorization: Token 279d38d84e4a8e0d7d1db5b8322a359896a7b6f4
 
 GET http://127.0.0.1:8000/orders/
 Content-type: application/json
-Authorization: Token d6cdaf444065d8568b754246a7f5e7af5f4404f0
+Authorization: Token 1edee542e2fa92de9fbec589c00548f191655c3e
 # Authorization: Token 279d38d84e4a8e0d7d1db5b8322a359896a7b6f4
 
 {
 }
 
 ###
-POST http://127.0.0.1:8000/orders/
+GET http://127.0.0.1:8000/orderItems/2
+Content-type: application/json
+# Authorization: Token 1edee542e2fa92de9fbec589c00548f191655c3e
+Authorization: Token f35049a696377b630739cb42533acdcdc7cd59fb
+
+{
+    "product": 11,
+    "quantity": 100
+}
+
+###
+GET http://127.0.0.1:8000/orderItems/cart/
+Content-type: application/json
+Authorization: Token 1edee542e2fa92de9fbec589c00548f191655c3e
+# Authorization: Token 279d38d84e4a8e0d7d1db5b8322a359896a7b6f4
+
+{
+    "product": 10
+}
+
+###
+
+GET http://127.0.0.1:8000/order/
 Content-type: application/json
 Authorization: Token d6cdaf444065d8568b754246a7f5e7af5f4404f0
 # Authorization: Token 279d38d84e4a8e0d7d1db5b8322a359896a7b6f4
 
 {
-    "product": 10,
-    "quantity": 1
+
 }
 
 ###
-
-GET http://127.0.0.1:8000/gathorders/
+POST http://127.0.0.1:8000/order/
 Content-type: application/json
 Authorization: Token d6cdaf444065d8568b754246a7f5e7af5f4404f0
 # Authorization: Token 279d38d84e4a8e0d7d1db5b8322a359896a7b6f4
@@ -74,17 +110,7 @@ Authorization: Token d6cdaf444065d8568b754246a7f5e7af5f4404f0
 }
 
 ###
-POST http://127.0.0.1:8000/gathorders/
-Content-type: application/json
-Authorization: Token d6cdaf444065d8568b754246a7f5e7af5f4404f0
-# Authorization: Token 279d38d84e4a8e0d7d1db5b8322a359896a7b6f4
-
-{
-
-}
-
-###
-PUT http://127.0.0.1:8000/gathorders/24/
+PUT http://127.0.0.1:8000/order/24/
 Content-type: application/json
 Authorization: Token d6cdaf444065d8568b754246a7f5e7af5f4404f0
 # Authorization: Token 279d38d84e4a8e0d7d1db5b8322a359896a7b6f4
@@ -94,7 +120,7 @@ Authorization: Token d6cdaf444065d8568b754246a7f5e7af5f4404f0
 }
 
 ###
-DELETE http://127.0.0.1:8000/gathorders/24/
+DELETE http://127.0.0.1:8000/order/24/
 Content-type: application/json
 Authorization: Token d6cdaf444065d8568b754246a7f5e7af5f4404f0
 # Authorization: Token 279d38d84e4a8e0d7d1db5b8322a359896a7b6f4

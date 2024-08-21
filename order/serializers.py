@@ -1,13 +1,9 @@
 from rest_framework import serializers
-from order.models import SingularProductOrder
+from .models import Order
 
 
-class SingularProductOrderSerializer(serializers.ModelSerializer):
+class OrderSerializer(serializers.ModelSerializer):
     class Meta(object):
-        model = SingularProductOrder
+        model = Order
         fields = "__all__"
-        extra_kwargs = {
-            'user': {'required': False}
-        }
-        # fields = ['id', 'user', 'product', 'quantity', 'gathered_orders']
-
+        read_only_fields = ['created_at']
