@@ -4,9 +4,11 @@ from rest_framework.decorators import action
 from rest_framework.authentication import SessionAuthentication, TokenAuthentication
 from rest_framework import viewsets, mixins
 
+from inventory.models import Inventory
 from main.serializers import EmptySerializer
 from order.models import Order
 from .models import OrderItem
+from order.serializers import OrderSerializer
 from .serializers import OrderItemSerializer
 from main.permissions import IsAuthorOrAdmin
 # Create your views here.
@@ -47,15 +49,27 @@ class orderItemViewSet(viewsets.GenericViewSet,
     def move_all_items_to_orders(self, request):
         user = request.user
         items = OrderItem.objects.filter(user=user, order=None)
-        
+        for item in items:
+            size = item.size
+            user = item.user
+            print(item.id)
+            product = item.product
+            quantity = item.quantity
+            description = f'user -id:{user.id}_{user}- bought {quantity} pices of {product} '
+            type = 'minus'
+            
+            inventory = Inventory.objects.create(
+                user=user, product=product, quantity=quantity,
+                size=size, description=description,type=type)
+            inventory.save()
         # Create a new Order for the user
         new_order = Order.objects.create(user=user)
         
         # Assign all OrderItems to the new Order
         items.update(order=new_order)
-        
         # Optionally: Serialize the new order and return a response
-        serializer = OrderItemSerializer(items, many=True)
+        serializer = OrderSerializer(new_order)
+
         return Response({'detail': 'All items moved to new order.', 'order_items': serializer.data}, status=status.HTTP_200_OK)
 
     def perfrom_create(self, serializer):

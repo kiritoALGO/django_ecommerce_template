@@ -1,6 +1,7 @@
 from django.db import models
 
 
+from size.models import Size
 from user.models import User
 from product.models import Product
 from order.models import Order
@@ -12,6 +13,7 @@ class OrderItem(models.Model):
     quantity = models.PositiveIntegerField(default=1)
     order = models.ForeignKey(Order, on_delete=models.CASCADE, blank=True, null=True, related_name='order_items')
     totalOrderItemsPrice = models.IntegerField(null=True, blank=True)
+    size = models.ForeignKey(Size, on_delete=models.CASCADE, null=True, blank=True)
 
     def __str__(self):
         if self.quantity == 1:

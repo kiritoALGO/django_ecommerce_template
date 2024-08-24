@@ -49,3 +49,11 @@ class OrderViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.Create
         if not user.is_staff:
             return Response({'error': 'You are not authorized to perform this action.'}, status=status.HTTP_403_FORBIDDEN)
         return super().destroy(request, *args, **kwargs)
+
+
+class AdminsOrdersViewSets(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.CreateModelMixin, 
+                    mixins.RetrieveModelMixin, mixins.UpdateModelMixin, mixins.DestroyModelMixin):
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
+    permission_classes = [permissions.IsAdminUser]
+    serializer_class = OrderSerializer
+    queryset = Order.objects.all()

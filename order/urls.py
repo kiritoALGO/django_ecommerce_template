@@ -5,6 +5,7 @@ from . import views
 
 router = DefaultRouter()
 router.register(r'', views.OrderViewSet, basename='order')
+router.register(r'admin-view', views.AdminsOrdersViewSets, basename='admin-order-view')
 
 urlpatterns = [
     # path('gathOrder/', views.create_gatherd_orders, name='gathOrder'),

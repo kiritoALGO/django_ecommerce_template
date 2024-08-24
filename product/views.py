@@ -40,22 +40,22 @@ class ProductsViewSet(viewsets.GenericViewSet,
 
 
 
-class AddSizesToProductView(APIView):
-    authentication_classes = [SessionAuthentication, TokenAuthentication]
-    permission_classes = [permissions.IsAdminUser]
-    # parser_classes = [JSONParser]  # or any other parser required for adding sizes
+# class AddSizesToProductView(APIView):
+#     authentication_classes = [SessionAuthentication, TokenAuthentication]
+#     permission_classes = [permissions.IsAdminUser]
+#     # parser_classes = [JSONParser]  # or any other parser required for adding sizes
 
-    def post(self, request, pk=None):
-        try:
-            product = Product.objects.get(pk=pk)
-        except Product.DoesNotExist:
-            return Response({"detail": "Product not found"}, status=status.HTTP_404_NOT_FOUND)
+#     def post(self, request, pk=None):
+#         try:
+#             product = Product.objects.get(pk=pk)
+#         except Product.DoesNotExist:
+#             return Response({"detail": "Product not found"}, status=status.HTTP_404_NOT_FOUND)
         
-        serializer = AddSizesToProductSerializer(data=request.data, context={'product': product})
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+#         serializer = AddSizesToProductSerializer(data=request.data, context={'product': product})
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response(serializer.data, status=status.HTTP_200_OK)
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 
