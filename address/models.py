@@ -6,6 +6,6 @@ class Address(models.Model):
     addressText = models.CharField(max_length=1000)
     city = models.CharField(max_length=100, default='Cairo')
     country = models.CharField(max_length=100, default='Egypt')
-
+    phone_number = models.CharField(max_length=20, default="", null=True, blank=True)
     def __str__(self):
         return self.addressText + ' - ' + self.city + ', ' + self.country
