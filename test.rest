@@ -129,3 +129,9 @@ Authorization: Token d6cdaf444065d8568b754246a7f5e7af5f4404f0
 }
 
 ###
+GET http://127.0.0.1:8000/127.0.0.1:8000/api-auth/test-token/
+Content-Type: application/json
+Authorization: Token d6cdaf444065d8568b754246a7f5e7af5f4404f0
+{
+
+}

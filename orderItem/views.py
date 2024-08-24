@@ -1,8 +1,11 @@
-# from rest_framework import viewsets, status
+from rest_framework import viewsets, status
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework.authentication import SessionAuthentication, TokenAuthentication
 from rest_framework import viewsets, mixins
+
+from main.serializers import EmptySerializer
+from order.models import Order
 from .models import OrderItem
 from .serializers import OrderItemSerializer
 from main.permissions import IsAuthorOrAdmin
@@ -23,9 +26,9 @@ class orderItemViewSet(viewsets.GenericViewSet,
     serializer_class = OrderItemSerializer
     queryset = OrderItem.objects.all()
 
-    def get_queryset(self):
-        user = self.request.user
-        return OrderItem.objects.filter(user=user, order=None)
+    # def get_queryset(self):
+    #     user = self.request.user
+    #     return OrderItem.objects.filter(user=user, order=None)
 
 
     @action(detail=False, methods=['get'], url_path='cart')
@@ -34,6 +37,26 @@ class orderItemViewSet(viewsets.GenericViewSet,
         items = OrderItem.objects.filter(user=user, order=None)
         serializer = OrderItemSerializer(items, many=True)
         return Response(serializer.data)
+    
+
+
+
+    # Custom schema to indicate no input parameters
+    
+    @action(detail=False, methods=['post'], url_path='move-to-orders', serializer_class=EmptySerializer)
+    def move_all_items_to_orders(self, request):
+        user = request.user
+        items = OrderItem.objects.filter(user=user, order=None)
+        
+        # Create a new Order for the user
+        new_order = Order.objects.create(user=user)
+        
+        # Assign all OrderItems to the new Order
+        items.update(order=new_order)
+        
+        # Optionally: Serialize the new order and return a response
+        serializer = OrderItemSerializer(items, many=True)
+        return Response({'detail': 'All items moved to new order.', 'order_items': serializer.data}, status=status.HTTP_200_OK)
 
     def perfrom_create(self, serializer):
         serializer.save()

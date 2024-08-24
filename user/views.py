@@ -1,9 +1,11 @@
-from rest_framework import status, mixins, viewsets
+from rest_framework import status, mixins, viewsets, permissions
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from rest_framework.views import APIView
 from rest_framework.decorators import action
 from rest_framework.authentication import SessionAuthentication, TokenAuthentication
+
+from main.permissions import IsAccountOwnerOrAdmin
 from .serializers import UserSerializer
 from .models import User
 from django.contrib.auth import login, authenticate
@@ -12,6 +14,7 @@ from django.contrib.auth import login, authenticate
 
 
 class UserViewSet(  viewsets.GenericViewSet,
+                    mixins.ListModelMixin,
                     mixins.CreateModelMixin,
                     mixins.RetrieveModelMixin,  ):
     """
@@ -19,8 +22,20 @@ class UserViewSet(  viewsets.GenericViewSet,
     """
 
     queryset = User.objects.all()
-    serializer_class = UserSerializer()
+    serializer_class = UserSerializer
+    permission_classes = [IsAccountOwnerOrAdmin]
 
+    def get_permissions(self):
+        """
+        Customize permissions based on the action.
+        """
+        if self.action in ['create']:
+            self.permission_classes = [permissions.AllowAny]
+        elif self.action in ['destroy']:
+            self.permission_classes = [permissions.IsAdminUser]
+        else:
+            self.permission_classes = [IsAccountOwnerOrAdmin]
+        return super().get_permissions()
 
     @action(detail=False, methods=['post'], url_path='login')
     def login(self, request):
@@ -46,7 +61,8 @@ class UserViewSet(  viewsets.GenericViewSet,
         """
         Test view to verify token authentication.
         """
-        serializer = self.get_serializer(request.user)
+        # serializer = self.get_serializer(request.user)
+        serializer = UserSerializer(request.user)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 

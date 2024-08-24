@@ -80,6 +80,9 @@ class ProductSerializer(serializers.ModelSerializer):
 class AddSizesToProductSerializer(serializers.Serializer):
     sizes = SizeSerializer(many=True)
 
+    # class Meta:
+    #     fields = ['sizes']
+
     def create(self, validated_data):
         product = self.context.get('product')
         sizes_data = validated_data.get('sizes')
