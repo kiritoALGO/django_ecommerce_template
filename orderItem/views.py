@@ -32,8 +32,15 @@ class orderItemViewSet(viewsets.GenericViewSet,
     #     user = self.request.user
     #     return OrderItem.objects.filter(user=user, order=None)
 
+# class orderActoinsViewSet(viewsets.GenericViewSet):
+#     authentication_classes = [SessionAuthentication, TokenAuthentication]
+#     permission_classes = [IsAuthorOrAdmin]
+#     serializer_class = OrderItemSerializer
+#     queryset = OrderItem.objects.all()
 
-    @action(detail=False, methods=['get'], url_path='cart')
+
+    # @action(detail=False, methods=['get']) #, url_path='cart')
+    @action(detail=False, methods=['get'] , url_path='cart')
     def view_cart_items(self, request):
         user = request.user
         items = OrderItem.objects.filter(user=user, order=None)
@@ -49,17 +56,19 @@ class orderItemViewSet(viewsets.GenericViewSet,
     def move_all_items_to_orders(self, request):
         user = request.user
         items = OrderItem.objects.filter(user=user, order=None)
+        if not items.exists():
+            return Response({'details': 'No products in cart'}, status=status.HTTP_400_BAD_REQUEST)
         for item in items:
             size = item.size
-            user = item.user
-            print(item.id)
+            itemUser = item.user
+            # print(item.id)
             product = item.product
             quantity = item.quantity
-            description = f'user -id:{user.id}_{user}- bought {quantity} pices of {product} '
+            description = f'user -id:{itemUser.id}_{itemUser}- bought {quantity} pices of {product} '
             type = 'minus'
             
             inventory = Inventory.objects.create(
-                user=user, product=product, quantity=quantity,
+                user=itemUser, product=product, quantity=quantity,
                 size=size, description=description,type=type)
             inventory.save()
         # Create a new Order for the user

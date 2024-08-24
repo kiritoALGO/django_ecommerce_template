@@ -1,7 +1,7 @@
-from rest_framework.serializers import Serializer
+from rest_framework.serializers import ModelSerializer
 from .models import Address
 
-class AddressSerializer(Serializer):
+class AddressSerializer(ModelSerializer):
     class Meta:
         model = Address
         fields = "__all__"

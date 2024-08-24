@@ -5,6 +5,7 @@ from size.models import Size
 from user.models import User
 from product.models import Product
 from order.models import Order
+from inventory.models import Inventory
 # Create your models here.
 
 class OrderItem(models.Model):
@@ -24,6 +25,17 @@ class OrderItem(models.Model):
         self.totalOrderItemsPrice = self.quantity * self.product.price
         super(OrderItem, self).save(*args, **kwargs)
 
+    def delete(self, *args, **kwargs):
+        inventory = Inventory.objects.create(
+            user=self.user,
+            product=self.product,
+            size=self.size,
+            quantity=self.quantity,
+            type='minus',
+            description=f'user -id:{self.user.id}_{self.user}- deleted {self.quantity} pieces of {self.product.name} -{self.size.size_text}-'
+        )
+
+        super(OrderItem, self).delete(*args, **kwargs)
 # class GatheredOrders(models.Model):
 #     """
 #     This model is used to gather the 'Singular Prodct Order' elemnts.
