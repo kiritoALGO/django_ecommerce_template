@@ -4,7 +4,6 @@ from rest_framework.decorators import action
 from rest_framework.authentication import SessionAuthentication, TokenAuthentication
 from rest_framework import viewsets, mixins
 
-from inventory.models import Inventory
 from main.serializers import EmptySerializer
 from order.models import Order
 from .models import OrderItem
@@ -52,33 +51,45 @@ class orderItemViewSet(viewsets.GenericViewSet,
 
     # Custom schema to indicate no input parameters
     
+    @action(detail=False, methods=['post'], url_path='buy-it-now')
+    def buy_single_item(self, request):
+        user = request.user
+        data = request.data
+
+
+        # Validate the incoming data with the serializer
+        serializer = OrderItemSerializer(data=data, context={'request': request})
+        if serializer.is_valid():
+            # Create a new Order for the user
+            new_order = Order.objects.create(user=user)
+
+            # Create a new OrderItem and associate it with the new order
+            order_item = serializer.save(user=user)
+            order_item.set_order(new_order)
+
+            # Optionally: Serialize the new order and return a response
+            order_serializer = OrderSerializer(new_order)
+            return Response({'detail': 'Item purchased and moved to new order.', 'order_item': order_serializer.data}, status=status.HTTP_201_CREATED)
+        
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
     @action(detail=False, methods=['post'], url_path='move-to-orders', serializer_class=EmptySerializer)
     def move_all_items_to_orders(self, request):
         user = request.user
         items = OrderItem.objects.filter(user=user, order=None)
         if not items.exists():
             return Response({'details': 'No products in cart'}, status=status.HTTP_400_BAD_REQUEST)
-        for item in items:
-            size = item.size
-            itemUser = item.user
-            # print(item.id)
-            product = item.product
-            quantity = item.quantity
-            description = f'user -id:{itemUser.id}_{itemUser}- bought {quantity} pices of {product} '
-            type = 'minus'
-            
-            inventory = Inventory.objects.create(
-                user=itemUser, product=product, quantity=quantity,
-                size=size, description=description,type=type)
-            inventory.save()
+        
         # Create a new Order for the user
         new_order = Order.objects.create(user=user)
         
-        # Assign all OrderItems to the new Order
-        items.update(order=new_order)
+        # Assign all OrderItems to the new Order using the set_order method
+        for item in items:
+            item.set_order(new_order)
+        
         # Optionally: Serialize the new order and return a response
         serializer = OrderSerializer(new_order)
-
         return Response({'detail': 'All items moved to new order.', 'order_items': serializer.data}, status=status.HTTP_200_OK)
 
     def perfrom_create(self, serializer):

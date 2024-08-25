@@ -9,7 +9,7 @@ from inventory.models import Inventory
 # Create your models here.
 
 class OrderItem(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(default=1)
     order = models.ForeignKey(Order, on_delete=models.CASCADE, blank=True, null=True, related_name='order_items')
@@ -20,7 +20,22 @@ class OrderItem(models.Model):
         if self.quantity == 1:
             return f"{self.quantity} piece of {self.product.name}"
         return f"{self.quantity} pieces of {self.product.name}"
-    
+
+    def set_order(self, order):
+        # Create an inventory record
+        Inventory.objects.create(
+            user=self.user,
+            product=self.product,
+            size=self.size,
+            quantity=self.quantity,
+            type='minus',  # Adjust this if needed
+            description=f'user -id:{self.user.id}_{self.user}- moved {self.quantity} pieces of {self.product.name} to order -id:{order.id}'
+        )
+        # Set the order
+        self.order = order
+        self.save()
+
+
     def save(self, *args, **kwargs):
         self.totalOrderItemsPrice = self.quantity * self.product.price
         super(OrderItem, self).save(*args, **kwargs)
