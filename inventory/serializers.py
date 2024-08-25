@@ -1,12 +1,14 @@
 from rest_framework import serializers
 
 from .models import Inventory
+from size.serializers import SizeSerializer
 from product.models import Product
 from size.models import Size
 
 class InventorySerializer(serializers.ModelSerializer):
     size_text = serializers.CharField(write_only=True)
     product = serializers.PrimaryKeyRelatedField(queryset=Product.objects.all())
+    size = SizeSerializer(read_only=True)
 
     class Meta(object):
         model = Inventory
