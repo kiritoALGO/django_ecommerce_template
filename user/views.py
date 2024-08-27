@@ -15,6 +15,7 @@ from django.contrib.auth import login, authenticate
 
 class UserViewSet(  viewsets.GenericViewSet,
                     mixins.ListModelMixin,
+                    mixins.UpdateModelMixin,
                     mixins.CreateModelMixin,
                     mixins.RetrieveModelMixin,  ):
     """
