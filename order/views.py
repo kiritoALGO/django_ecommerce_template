@@ -11,7 +11,7 @@ from .serializers import OrderSerializer
 class OrderViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.CreateModelMixin, 
                     mixins.RetrieveModelMixin, mixins.UpdateModelMixin, mixins.DestroyModelMixin):
     authentication_classes = [SessionAuthentication, TokenAuthentication]
-    permission_classes = [IsAuthorOrAdmin]
+    # permission_classes = [IsAuthorOrAdmin]
     serializer_class = OrderSerializer
     queryset = Order.objects.all()
     
@@ -51,9 +51,9 @@ class OrderViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.Create
         return super().destroy(request, *args, **kwargs)
 
 
-class AdminsOrdersViewSets(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.CreateModelMixin, 
+class AdminsOrdersViewSets(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.CreateModelMixin,
                     mixins.RetrieveModelMixin, mixins.UpdateModelMixin, mixins.DestroyModelMixin):
     authentication_classes = [SessionAuthentication, TokenAuthentication]
-    permission_classes = [permissions.IsAdminUser]
+    # permission_classes = [permissions.IsAdminUser]
     serializer_class = OrderSerializer
     queryset = Order.objects.all()
