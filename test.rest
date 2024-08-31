@@ -8,7 +8,7 @@ Content-type: application/json
 POST http://127.0.0.1:8000/api-auth/login/
 Content-type: application/json
 
-{ "username": "test", "password": "test" }
+{ "email": "ofe78426@zccck.com", "password": "test1234$" }
 
 ###
 
@@ -16,6 +16,26 @@ POST http://127.0.0.1:8000/api-auth/signup/
 Content-type: application/json
 
 { "username": "test", "password": "test", "email": "test@test.com" }
+
+###
+
+POST http://127.0.0.1:8000/verification/password-reset-request/
+Content-type: application/json
+
+{ "email": "ofe78426@zccck.com" }
+
+###
+
+POST http://127.0.0.1:8000/verification/password-reset-confirm/
+Content-type: application/json
+
+{
+    "email": "ofe78426@zccck.com",
+    "code" : "OUDWD8",
+    "new_password": "test1234$"
+}
+
+
 
 ###
 POST http://127.0.0.1:8000/products/

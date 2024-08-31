@@ -7,7 +7,7 @@ class UserSerializer(serializers.ModelSerializer):
     token = serializers.SerializerMethodField()
     class Meta(object):
         model = User
-        fields = ['id', 'username', 'password', 'email', 'groups', 'token']
+        fields = ['id','password', 'email', 'groups', 'token', 'first_name', 'last_name']
         extra_kwargs = {'password': {'write_only': True}}
 
     def get_token(self, obj):
@@ -20,7 +20,7 @@ class UserSerializer(serializers.ModelSerializer):
         user  =  User.objects.create_user(**validated_data)
 
         if not groups_data:
-            default_groups = Group.objects.get(name='customer')
+            default_groups = Group.objects.get(name='Viewer')
             user.groups.add(default_groups)
         else:
             for group in groups_data:

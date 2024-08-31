@@ -1,3 +1,18 @@
+from user.models import User
+from rest_framework.response import Response
+from rest_framework import status
+def remove_all_users(self):
+    # Get all users from the database
+    users = User.objects.all()
+    
+    # Delete all users from the database
+    users.delete()
+    
+    # Return a success message
+    return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+
 # from django.urls import get_resolver, reverse, NoReverseMatch
 # from rest_framework.views import APIView
 # from rest_framework.response import Response
