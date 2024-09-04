@@ -31,15 +31,15 @@ class orderItemViewSet(viewsets.GenericViewSet,
     #     user = self.request.user
     #     return OrderItem.objects.filter(user=user, order=None)
 
-class orderActoinsViewSet(viewsets.GenericViewSet):
-    authentication_classes = [SessionAuthentication, TokenAuthentication]
-    permission_classes = [permissions.IsAuthenticated]
-    serializer_class = OrderItemSerializer
-    queryset = OrderItem.objects.all()
+# class orderActoinsViewSet(viewsets.GenericViewSet):
+#     authentication_classes = [SessionAuthentication, TokenAuthentication]
+#     permission_classes = [permissions.AllowAny ,permissions.IsAdminUser]
+#     serializer_class = OrderItemSerializer
+#     queryset = OrderItem.objects.all()
 
 
     # @action(detail=False, methods=['get']) #, url_path='cart')
-    @action(detail=False, methods=['get'] , url_path='cart')
+    @action(detail=False, methods=['get'] , url_path='cart', permission_classes=[permissions.IsAuthenticated])
     def view_cart_items(self, request):
         user = request.user
         items = OrderItem.objects.filter(user=user.id, order=None)
@@ -51,9 +51,9 @@ class orderActoinsViewSet(viewsets.GenericViewSet):
 
     # Custom schema to indicate no input parameters
     
-    @action(detail=False, methods=['post'], url_path='buy-it-now')
+    @action(detail=False, methods=['post'], url_path='buy-it-now', permission_classes=[permissions.AllowAny])
     def buy_single_item(self, request):
-        user = request.user
+        user = request.user if request.user.is_authenticated else None
         data = request.data
 
 
@@ -77,7 +77,7 @@ class orderActoinsViewSet(viewsets.GenericViewSet):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-    @action(detail=False, methods=['post'], url_path='move-to-orders', serializer_class=EmptySerializer)
+    @action(detail=False, methods=['post'], url_path='move-to-orders', serializer_class=EmptySerializer, permission_classes=[permissions.IsAuthenticated])
     def move_all_items_to_orders(self, request):
         user = request.user
         items = OrderItem.objects.filter(user=user, order=None)

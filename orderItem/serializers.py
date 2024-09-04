@@ -38,9 +38,12 @@ class OrderItemSerializer(serializers.ModelSerializer):
         size = Size.objects.get(size_text=size_text, product=product)
         validated_data['size'] = size
         # validated_data['order'] = validated_data.get('order', None)
-
-        existing_order_item = OrderItem.objects.filter(user=user, size=size , product=product, order__isnull=True).first()
-
+        # print(help(user))
+        
+        if user.is_anonymous:
+            existing_order_item = None
+            return super().create(validated_data)
+        existing_order_item = OrderItem.objects.filter(user=user, size=size, product=product, order__isnull=True).first()
         if existing_order_item:
             if quantity:
                 existing_order_item.quantity += quantity

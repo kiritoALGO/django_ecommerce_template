@@ -23,13 +23,15 @@ class OrderItem(models.Model):
 
     def set_order(self, order):
         # Create an inventory record
+        description = f'user -id:{self.user.id if self.user else None}_{self.user}- moved {self.quantity} pieces of {self.product.name} to order -id:{order.id}'
+
         Inventory.objects.create(
             user=self.user,
             product=self.product,
             size=self.size,
             quantity=self.quantity,
             type='minus',  # Adjust this if needed
-            description=f'user -id:{self.user.id}_{self.user}- moved {self.quantity} pieces of {self.product.name} to order -id:{order.id}'
+            description=description
         )
         # Set the order
         self.order = order
