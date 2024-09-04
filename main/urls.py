@@ -37,6 +37,7 @@ schema_view = get_schema_view(
 )
 from . import views
 urlpatterns = [
+    path("accounts/", include("django.contrib.auth.urls")),
     path('remove-all-users/', views.remove_all_users),
     path('admin/', admin.site.urls),
     path('api-auth/', include('user.urls')),
