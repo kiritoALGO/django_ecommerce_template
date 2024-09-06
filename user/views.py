@@ -17,6 +17,7 @@ class UserViewSet(viewsets.GenericViewSet,
     """
     A viewset that provides the standard actions.
     """
+    authentication_classes = [TokenAuthentication]
 
     queryset = User.objects.all()
     serializer_class = UserSerializer

@@ -20,14 +20,54 @@ class OrderViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.Create
         return Order.objects.filter(user=user)
 
     def perform_create(self, serializer):
-        user = self.request.user
-        orderitems = OrderItem.objects.filter(user=user, order=None)
-        if not orderitems.exists():
-            raise Response({'details': "No products in cart"}, status=status.HTTP_400_BAD_REQUEST)
-        order = serializer.save(user=user)
-        for orderitem in orderitems:
-            orderitem.orders = order
-            orderitem.save()
+        # user = self.request.user
+        # orderitems = OrderItem.objects.filter(user=user, order=None)
+        # if not orderitems.exists():
+        #     raise Response({'details': "No products in cart"}, status=status.HTTP_400_BAD_REQUEST)
+        # order = serializer.save(user=user)
+        # for orderitem in orderitems:
+        #     orderitem.orders = order
+        #     orderitem.save()
+
+        # If authenticated
+        if (self.request.user.is_authenticated):
+          user = self.request.user
+          
+          orderitems = OrderItem.objects.filter(user=user, order=None)
+          if not orderitems.exists():
+              raise Response({'details': "No products in cart"}, status=status.HTTP_400_BAD_REQUEST)
+          
+          # Save order with the user
+          order = serializer.save(user=user)
+          
+          # Creating OrderItem instances
+          for orderitem in orderitems:
+              orderitem.orders = order
+              orderitem.save()
+
+        # If not authenticated create order without user
+        else:
+          cart_data = self.request.data.get('cart_items', None)
+
+          if not cart_data:
+              return Response({'details': "No products in cart"}, status=status.HTTP_400_BAD_REQUEST)
+          
+          # Save order without a user.
+          order = serializer.save(user=None)
+
+          # Creating OrderItem instances
+          for item in cart_data:
+              OrderItem.objects.create(
+                  product_id=item['product_id'],
+                  quantity=item['quantity'],
+                  size_text=item['size_text'],
+                  order=order
+              )
+
+        # Serialize the created order, including order items
+        response_serializer = OrderSerializer(order)
+        return Response(response_serializer.data, status=status.HTTP_201_CREATED)
+          
 
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
@@ -49,6 +89,10 @@ class OrderViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.Create
         if not user.is_staff:
             return Response({'error': 'You are not authorized to perform this action.'}, status=status.HTTP_403_FORBIDDEN)
         return super().destroy(request, *args, **kwargs)
+    
+    def partial_update(self, request, *args, **kwargs):
+        kwargs['partail'] = True
+        return self.update(request, *args, **kwargs)
 
 
 class AdminsOrdersViewSets(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.CreateModelMixin,
@@ -57,3 +101,7 @@ class AdminsOrdersViewSets(viewsets.GenericViewSet, mixins.ListModelMixin, mixin
     # permission_classes = [permissions.IsAdminUser]
     serializer_class = OrderSerializer
     queryset = Order.objects.all()
+        
+    def partial_update(self, request, *args, **kwargs):
+        kwargs['partail'] = True
+        return self.update(request, *args, **kwargs)
