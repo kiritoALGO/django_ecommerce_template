@@ -5,9 +5,11 @@ from address.models import Address
 from product.models import Product
 from size.models import Size
 from product.serializers import ProductSerializer 
+from size.serializers import SizeSerializer
 from .models import Order
 class OrderItemSerializer(serializers.ModelSerializer):
     size_text = serializers.CharField(write_only=True)
+    size = SizeSerializer(read_only=True)
     product = ProductSerializer(read_only=True)
     product_id = serializers.IntegerField(write_only=True)
     class Meta(object):
