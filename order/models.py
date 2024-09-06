@@ -27,6 +27,10 @@ class Order(models.Model):
     country = models.CharField(max_length=100, default='Egypt')
     phone_number = models.CharField(max_length=20, default="", null=True, blank=True)
     
+    
+    order_first_name = models.CharField(max_length=100)
+    order_last_name = models.CharField(max_length=100)
+
     # total_price = models.DecimalField(max_digits=10, decimal_places=2)
     
     def show_the_address(self):

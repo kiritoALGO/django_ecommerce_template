@@ -21,6 +21,8 @@ class OrderSerializer(serializers.ModelSerializer):
             'country', 
             'phone_number', 
             'user',
+            'order_first_name',
+            'order_last_name',
           ]
         read_only_fields = ['created_at']
 
