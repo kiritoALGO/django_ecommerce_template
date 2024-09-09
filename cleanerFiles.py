@@ -18,6 +18,14 @@ def remove_dirs(root_dir, dirs):
                 dir_to_remove = os.path.join(dirpath, dirname)
                 print(f"Removing directory: {dir_to_remove}")
                 shutil.rmtree(dir_to_remove, ignore_errors=True)
+                
+                # Recreate the migrations folder with an empty __init__.py
+                if dirname == 'migrations':
+                    migrations_path = os.path.join(dirpath, 'migrations')
+                    os.makedirs(migrations_path, exist_ok=True)
+                    init_file = os.path.join(migrations_path, '__init__.py')
+                    open(init_file, 'w').close()  # Create an empty __init__.py file
+                    print(f"Recreated migrations folder: {migrations_path} with __init__.py")
 
 # Remove specific files like db.sqlite3
 def remove_files(root_dir, files):
