@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'inventory',
     'size',
     'verification',
+    'shippingRate',
     
     # External packages
     'rest_framework',

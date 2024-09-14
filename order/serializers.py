@@ -23,6 +23,8 @@ class OrderSerializer(serializers.ModelSerializer):
             'user',
             'order_first_name',
             'order_last_name',
+            'governorate',
+            'shipping_price',
           ]
         read_only_fields = ['created_at']
 

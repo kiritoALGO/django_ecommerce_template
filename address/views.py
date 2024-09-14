@@ -20,3 +20,4 @@ class addressViewSet(viewsets.GenericViewSet,
     def get_queryset(self):
         user = self.request.user
         return Address.objects.filter(user=user)
+
