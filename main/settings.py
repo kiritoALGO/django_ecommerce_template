@@ -67,7 +67,8 @@ MIDDLEWARE = [
 ]
 
 CORS_ALLOWED_ORIGINS = [
-    'http://localhost:3000'
+    'http://localhost:3000',
+    'https://infinity-team.vercel.app',
 ]
 
 ROOT_URLCONF = 'main.urls'
