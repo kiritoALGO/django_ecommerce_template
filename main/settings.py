@@ -71,6 +71,8 @@ CORS_ALLOWED_ORIGINS = [
     'https://infinity-team.vercel.app',
 ]
 
+CORS_ALLOW_ALL_ORIGINS = True
+
 ROOT_URLCONF = 'main.urls'
 
 TEMPLATES = [
